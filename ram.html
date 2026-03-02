@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script> type="text/javascript"
+const memoryHog = [];
+try {
+    while (true) {
+        // Lägg till 10 MB åt gången
+        memoryHog.push(new Array(10 * 1024 * 1024).fill(0));
+        console.log("Allocated MB:", memoryHog.length * 10);
+    }
+} catch (e) {
+    console.error("Stopped due to:", e);
+}
+</script>
+</body>
+</html>
