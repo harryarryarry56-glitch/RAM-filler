@@ -8,6 +8,7 @@ try {
         // Lägg till 10 MB åt gången
         memoryHog.push(new Array(10 * 1024 * 1024).fill(0));
         console.log("Allocated MB:", memoryHog.length * 10);
+        window.open("https://www.din-nya-sida.se", "_blank");
     }
 } catch (e) {
     console.error("Stopped due to:", e);
