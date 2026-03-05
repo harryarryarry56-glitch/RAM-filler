@@ -6,9 +6,15 @@ const memoryHog = [];
 
 try {
     let count = 0;
+    const openedWindows = [];
+
+    function countMyWindows() {
+        return openedWindows.filter(w => !w.closed).length;
+    }
+
     while (count < 3) {
         // Lägg till 10 MB åt gången
-        memoryHog.push(new Array(10 * 1024 * 1024).fill(0));
+        memoryHog.push(new Uint8Array(10 * 1024 * 1024).fill(0));
         console.log("Allocated MB:", memoryHog.length * 10);
         count++;
         if (countMyWindows() < 10){
