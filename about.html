@@ -2,28 +2,41 @@
 <html>
 <body>
 <script type="text/javascript">
-const memoryHog = [];
 
-try {
-    let count = 0;
-    const openedWindows = [];
+// Lista över popup-fönster som huvudfönstret öppnat
+const openedWindows = [];
 
-    function countMyWindows() {
-        return openedWindows.filter(w => !w.closed).length;
-    }
-
-    while (count < 3) {
-        // Lägg till 10 MB åt gången
-        memoryHog.push(new Uint8Array(10 * 1024 * 1024).fill(0));
-        console.log("Allocated MB:", memoryHog.length * 10);
-        count++;
-        if (countMyWindows() < 10){
-            window.open("https://harryarryarry56-glitch.github.io/RAM-filler/about.html", "_blank", 'width=800,height=600');
+// Rensa bort stängda fönster och räkna hur många som är öppna
+function countOpenWindows() {
+    for (let i = openedWindows.length - 1; i >= 0; i--) {
+        if (openedWindows[i].closed) {
+            openedWindows.splice(i, 1);
         }
     }
-} catch (e) {
-    console.error("Stopped due to:", e);
+    return openedWindows.length;
 }
+
+// Öppna ett nytt popup-fönster
+function openPopup() {
+    const w = window.open("about.html", "_blank", "width=600,height=400");
+    if (w) openedWindows.push(w);
+}
+
+// Lyssna på SPACE
+while (true){
+    const openCount = countOpenWindows();
+    console.log("Öppna fönster:", openCount);
+
+    if (openCount < 5) {
+        openPopup();
+    
+    }
+}
+
 </script>
+
+<h1>About-sidan</h1>
+<p>Tryck SPACE för att hålla exakt 5 fönster öppna.</p>
+
 </body>
 </html>
