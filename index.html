@@ -35,15 +35,22 @@ function openPopup() {
 
 // SPACE = kontrollera och öppna tills 5 popup-fönster finns
 while (true) {
-    let count = parseInt(localStorage.getItem(KEY));
+    let openingcount = 0;
+    if (openingcount > 20){
+        let count = parseInt(localStorage.getItem(KEY));
+    
+        while (count < 5) {
+            openPopup();
+            count++;
+            localStorage.setItem(KEY, String(count));
+        }
 
-    while (count < 5) {
-        openPopup();
-        count++;
-        localStorage.setItem(KEY, String(count));
+        console.log("Totalt öppna popup-fönster:", count);
+        openingcount = 0;
+    } else{
+        openingcount++;
     }
-
-    console.log("Totalt öppna popup-fönster:", count);
+        
 }
 
 // Lyssna på ändringar från andra fönster
