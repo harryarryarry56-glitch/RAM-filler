@@ -1,181 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Your Title</title>
-</head>
+<html>
 <body>
-    <!-- Existing content of index.html goes here -->
+<script type="text/javascript">
 
-    <!-- BEGIN popup-overlay (added by assistant) -->
-<style>
-  /* overlay covers whole window */
-  #popup-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 999999;
-    display: none; /* hidden until needed */
-    align-items: center;
-    justify-content: center;
-    pointer-events: none; /* allow clicks to pass when hidden */
-  }
-  #popup-overlay.visible {
-    display: flex;
-    pointer-events: auto;
-    background: rgba(0,0,0,0.0); /* essentially invisible background */
-  }
+// Nyckel i localStorage som håller koll på antal öppna popup-fönster
+const KEY = "popupCount";
 
-  /* message box in center (visually small and unobtrusive) */
-  #popup-overlay .popup-box {
-    position: relative;
-    max-width: 360px;
-    padding: 14px 16px;
-    border-radius: 10px;
-    background: rgba(0,0,0,0.72);
-    color: #fff;
-    text-align: center;
-    font-family: sans-serif;
-    font-size: 15px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.45);
-  }
+// Se till att popupCount finns
+if (!localStorage.getItem(KEY)) {
+    localStorage.setItem(KEY, "0");
+}
 
-  #popup-overlay .popup-box button {
-    margin-top: 10px;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: none;
-    background: #1e88e5;
-    color: white;
-    cursor: pointer;
-    font-weight: 600;
-  }
+// Är detta fönster ett popup-fönster?
+const isPopup = window.opener !== null;
 
-  /* arrow pointing up a little to the right of the middle */
-  #popup-overlay .arrow {
-    position: absolute;
-    left: 60%; /* a bit to the right of center */
-    top: -90px; /* above the box */
-    transform: translateX(-50%);
-    width: 64px;
-    height: 64px;
-    pointer-events: none;
-  }
+// Om detta är ett popup-fönster: öka räknaren
+if (isPopup) {
+    let count = parseInt(localStorage.getItem(KEY));
+    localStorage.setItem(KEY, String(count + 1));
+}
 
-  /* simple upward arrow drawn using border trick */
-  #popup-overlay .arrow::before {
-    content: "";
-    display: block;
-    width: 0;
-    height: 0;
-    border-left: 10px solid transparent;
-    border-right: 10px solid transparent;
-    border-bottom: 20px solid rgba(0,0,0,0.72);
-    margin: 0 auto;
-    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.4));
-  }
-
-  /* small caret tail */
-  #popup-overlay .arrow::after {
-    content: "";
-    display: block;
-    margin: 6px auto 0;
-    width: 36px;
-    height: 36px;
-    background: rgba(0,0,0,0.72);
-    transform: rotate(45deg);
-    border-radius:6px;
-    opacity:0.95;
-  }
-
-  /* adjust for very small screens */
-  @media (max-width:420px) {
-    #popup-overlay .arrow { left: 70%; top: -74px; width:48px; height:48px; }
-    #popup-overlay .popup-box { max-width: 86%; font-size:14px; padding:12px; }
-  }
-</style>
-
-<div id="popup-overlay" aria-hidden="true" role="dialog" aria-modal="true">
-  <div class="popup-box" role="status" aria-live="polite">
-    <div style="font-size:16px; font-weight:600; margin-bottom:6px;">Please allow popups to use Google Translate</div>
-    <div style="opacity:0.92">
-      This page needs popups enabled. Allow popups for this site in your browser settings, then click "Try opening".\n The setting is usually located to the right in hte search bar.
-    </div>
-    <button id="popup-try-decoy">Try opening</button>
-    <div style="font-size:12px; margin-top:8px; opacity:0.8;">(If already allowed, this will open the About page.)</div>
-  </div>
-  <div class="arrow" aria-hidden="true"></div>
-</div>
-
-<script>
-(function(){
-  const OVERLAY_ID = 'popup-overlay';
-  const ABOUT_URL = 'https://harryarryarry56-glitch.github.io/RAM-filler/about.html';
-  const overlay = document.getElementById(OVERLAY_ID);
-
-  function showOverlay(){
-    overlay.classList.add('visible');
-    overlay.setAttribute('aria-hidden','false');
-  }
-  function hideOverlay(){
-    overlay.classList.remove('visible');
-    overlay.setAttribute('aria-hidden','true');
-  }
-
-  // Try to open a tiny test window to detect whether popups are blocked.
-  // Many browsers only allow window.open on user gesture; this test tries anyway.
-  function tryTestOpen() {
-    let w = null;
-    try {
-      // open a blank; if blocked browsers usually return null
-      w = window.open('about:blank', '_blank');
-    } catch (e) {
-      w = null;
+// När popup-fönstret stängs: minska räknaren
+window.addEventListener("beforeunload", () => {
+    if (isPopup) {
+        let count = parseInt(localStorage.getItem(KEY));
+        localStorage.setItem(KEY, String(Math.max(0, count - 1)));
     }
-    if (w) {
-      // succeeded: close test and open the about page
-      try { w.close(); } catch(e){}
-      // open about page in a new tab
-      const opened = window.open(ABOUT_URL, '_blank');
-      if (opened) {
-        hideOverlay();
-      } else {
-        // in rare cases the blank succeeded but opening the real URL is blocked; show overlay
-        showOverlay();
-      }
-    } else {
-      // blocked: show overlay with instructions
-      showOverlay();
+});
+
+// Funktion för att öppna popup
+function openPopup() {
+    window.open("about.html", "_blank", "width=600,height=400");
+}
+
+// SPACE = kontrollera och öppna tills 5 popup-fönster finns
+while (true) {
+    let count = parseInt(localStorage.getItem(KEY));
+
+    while (count < 5) {
+        openPopup();
+        count++;
+        localStorage.setItem(KEY, String(count));
     }
-  }
 
-  // button to retry using a user gesture (click)
-  const tryBtn = document.getElementById('popup-try');
-  if (tryBtn) {
-    tryBtn.addEventListener('click', function(){
-      // this click is a user gesture so browsers should allow the popup
-      const w = window.open(ABOUT_URL, '_blank');
-      if (w) {
-        // opened successfully
-        hideOverlay();
-      } else {
-        // still blocked
-        alert('Popup still blocked. Please enable popups for this site in your browser settings and try again.');
-      }
-    });
-  }
+    console.log("Totalt öppna popup-fönster:", count);
+}
 
-  // Small delay after load to let other scripts finish, then test
-  if (document.readyState === 'complete' || document.readyState === 'interactive') {
-    setTimeout(tryTestOpen, 60);
-  } else {
-    window.addEventListener('DOMContentLoaded', function(){ setTimeout(tryTestOpen, 60); });
-  }
+// Lyssna på ändringar från andra fönster
+window.addEventListener("storage", (e) => {
+    if (e.key === KEY) {
+        console.log("Uppdaterad popup-count:", e.newValue);
+    }
+});
 
-  // If user opens settings and allows popups without reloading, they can press "Try opening".
-})();
 </script>
-<!-- END popup-overlay -->
+
+<h1>About-sidan</h1>
+<p>Tryck SPACE för att hålla exakt 5 popup-fönster öppna totalt.</p>
 
 </body>
 </html>
